@@ -12,9 +12,13 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 
+import java.util.concurrent.TimeUnit;
+
 public class RangeSliderView extends View {
 
   private static final String TAG = RangeSliderView.class.getSimpleName();
+
+  private static final long RIPPLE_ANIMATION_DURATION_MS = TimeUnit.MILLISECONDS.toMillis(700);
 
   private static final int DEFAULT_PAINT_STROKE_WIDTH = 5;
 
@@ -23,6 +27,10 @@ public class RangeSliderView extends View {
   private static final int DEFAULT_EMPTY_COLOR = Color.parseColor("#C3C3C3");
 
   private static final float DEFAULT_BAR_HEIGHT_PERCENT = 0.10f;
+
+  private static final float DEFAULT_SLOT_RADIUS_PERCENT = 0.125f;
+
+  private static final float DEFAULT_SLIDER_RADIUS_PERCENT = 0.25f;
 
   private static final int DEFAULT_RANGE_COUNT = 5;
 
@@ -72,6 +80,10 @@ public class RangeSliderView extends View {
 
   private Path outerPath = new Path();
 
+  private float slotRadiusPercent = DEFAULT_SLOT_RADIUS_PERCENT;
+
+  private float sliderRadiusPercent = DEFAULT_SLIDER_RADIUS_PERCENT;
+
   public RangeSliderView(Context context) {
     this(context, null);
   }
@@ -96,15 +108,26 @@ public class RangeSliderView extends View {
           R.styleable.RangeSliderView_emptyColor, DEFAULT_EMPTY_COLOR);
         barHeightPercent = a.getFloat(
           R.styleable.RangeSliderView_barHeightPercent, DEFAULT_BAR_HEIGHT_PERCENT);
+        barHeightPercent = a.getFloat(
+          R.styleable.RangeSliderView_barHeightPercent, DEFAULT_BAR_HEIGHT_PERCENT);
+        slotRadiusPercent = a.getFloat(
+          R.styleable.RangeSliderView_slotRadiusPercent, DEFAULT_SLOT_RADIUS_PERCENT);
+        sliderRadiusPercent = a.getFloat(
+          R.styleable.RangeSliderView_sliderRadiusPercent, DEFAULT_SLIDER_RADIUS_PERCENT);
       } finally {
         a.recycle();
         sa.recycle();
       }
     }
 
+    setBarHeightPercent(barHeightPercent);
+    setRangeCount(rangeCount);
+    setSlotRadiusPercent(slotRadiusPercent);
+    setSliderRadiusPercent(sliderRadiusPercent);
+
     barHeight = (int) (height * barHeightPercent);
-    radius = height / 4;
-    slotRadius = radius / 2;
+    radius = height * sliderRadiusPercent;
+    slotRadius = height * slotRadiusPercent;
     currentIndex = 0;
 
     slotPositions = new float[rangeCount];
@@ -127,6 +150,51 @@ public class RangeSliderView extends View {
     });
   }
 
+  public int getRangeCount() {
+    return rangeCount;
+  }
+
+  public void setRangeCount(int rangeCount) {
+    if (rangeCount < 2) {
+      throw new IllegalArgumentException("rangeCount must be >= 2");
+    }
+    this.rangeCount = rangeCount;
+  }
+
+  public float getBarHeightPercent() {
+    return barHeightPercent;
+  }
+
+  public void setBarHeightPercent(float percent) {
+    if (percent <= 0.0 || percent > 1.0) {
+      throw new IllegalArgumentException("Bar height percent must be in (0, 1]");
+    }
+    this.barHeightPercent = percent;
+  }
+
+  public float getSlotRadiusPercent() {
+    return slotRadiusPercent;
+  }
+
+  public void setSlotRadiusPercent(float percent) {
+    if (percent <= 0.0 || percent > 1.0) {
+      throw new IllegalArgumentException("Slot radius percent must be in (0, 1]");
+    }
+    this.slotRadiusPercent = percent;
+  }
+
+  public float getSliderRadiusPercent() {
+    return sliderRadiusPercent;
+  }
+
+  public void setSliderRadiusPercent(float percent) {
+    if (percent <= 0.0 || percent > 1.0) {
+      throw new IllegalArgumentException("Slider radius percent must be in (0, 1]");
+    }
+    this.sliderRadiusPercent = percent;
+  }
+
+  @AnimateMethod
   public void setRadius(final float radius) {
     rippleRadius = radius;
     if (rippleRadius > 0) {
@@ -212,15 +280,6 @@ public class RangeSliderView extends View {
     invalidate();
   }
 
-  public float getBarHeightPercent() {
-    return barHeightPercent;
-  }
-
-  public void setBarHeightPercent(float barHeightPercent) {
-    this.barHeightPercent = barHeightPercent;
-    invalidate();
-  }
-
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     setMeasuredDimension(measureWidth(widthMeasureSpec), measureHeight(heightMeasureSpec));
@@ -260,7 +319,7 @@ public class RangeSliderView extends View {
     if (specMode == MeasureSpec.EXACTLY) {
       result = specSize;
     } else {
-      result = getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight() + (2 * DEFAULT_PAINT_STROKE_WIDTH) + 2 * (int) radius;
+      result = getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight() + (2 * DEFAULT_PAINT_STROKE_WIDTH) + (int) (2 * radius);
       if (specMode == MeasureSpec.AT_MOST) {
         result = Math.min(result, specSize);
       }
@@ -298,7 +357,7 @@ public class RangeSliderView extends View {
   private void animateRipple() {
     ObjectAnimator animator = ObjectAnimator.ofFloat(this, "radius", 0, radius);
     animator.setInterpolator(new AccelerateInterpolator());
-    animator.setDuration(700);
+    animator.setDuration(RIPPLE_ANIMATION_DURATION_MS);
     animator.start();
     animator.addListener(new Animator.AnimatorListener() {
       @Override
@@ -366,7 +425,7 @@ public class RangeSliderView extends View {
   private void drawEmptySlots(Canvas canvas) {
     paint.setColor(emptyColor);
     int h = getHeightWithPadding();
-    int y = getPaddingTop() + h / 2;
+    int y = getPaddingTop() + (h >> 1);
     for (int i = 0; i < rangeCount; ++i) {
       canvas.drawCircle(slotPositions[i], y, slotRadius, paint);
     }
@@ -383,7 +442,7 @@ public class RangeSliderView extends View {
   private void drawFilledSlots(Canvas canvas) {
     paint.setColor(filledColor);
     int h = getHeightWithPadding();
-    int y = getPaddingTop() + h / 2;
+    int y = getPaddingTop() + (h >> 1);
     for (int i = 0; i < rangeCount; ++i) {
       if (slotPositions[i] <= currentSlidingX) {
         canvas.drawCircle(slotPositions[i], y, slotRadius, paint);
@@ -394,8 +453,8 @@ public class RangeSliderView extends View {
   private void drawBar(Canvas canvas, int from, int to, int color) {
     paint.setColor(color);
     int h = getHeightWithPadding();
-    int half = barHeight / 2;
-    int y = getPaddingTop() + h / 2;
+    int half = (barHeight >> 1);
+    int y = getPaddingTop() + (h >> 1);
     canvas.drawRect(from, y - half, to, y + half, paint);
   }
 
@@ -420,9 +479,9 @@ public class RangeSliderView extends View {
     int w = getWidthWithPadding();
     int h = getHeightWithPadding();
     int spacing = w / rangeCount;
-    int border = spacing / 2;
+    int border = (spacing >> 1);
     int x0 = getPaddingLeft() + border;
-    int y0 = getPaddingTop() + h / 2;
+    int y0 = getPaddingTop() + (h >> 1);
     drawEmptySlots(canvas);
     drawFilledSlots(canvas);
 

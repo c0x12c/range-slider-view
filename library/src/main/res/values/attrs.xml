@@ -6,5 +6,7 @@
     <attr name="filledColor" format="color"/>
     <attr name="emptyColor" format="color"/>
     <attr name="barHeightPercent" format="float"/>
+    <attr name="slotRadiusPercent" format="float"/>
+    <attr name="sliderRadiusPercent" format="float"/>
   </declare-styleable>
 </resources>

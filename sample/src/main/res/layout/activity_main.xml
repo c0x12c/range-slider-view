@@ -37,6 +37,8 @@
     android:layout_marginRight="30dp"
     rsv:filledColor="#00cbff"
     rsv:emptyColor="#a8aeb8"
+    rsv:rangeCount="5"
+    rsv:barHeightPercent="0.1"
     />
 
 </LinearLayout>
