@@ -3,7 +3,7 @@ package com.chan.rsv.sample;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
-import com.chan.rsv.RangeSliderView;
+import com.github.channguyen.rsv.RangeSliderView;
 
 public class MainActivity extends AppCompatActivity {
 

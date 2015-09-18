@@ -6,7 +6,7 @@
   android:orientation="vertical"
   >
 
-  <com.chan.rsv.RangeSliderView
+  <com.github.channguyen.rsv.RangeSliderView
     android:id="@+id/rsv_small"
     android:layout_marginTop="50dp"
     android:layout_width="match_parent"
@@ -17,14 +17,26 @@
     />
 
 
-  <com.chan.rsv.RangeSliderView
+  <com.github.channguyen.rsv.RangeSliderView
     android:id="@+id/rsv_large"
+    android:layout_marginTop="100dp"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:layout_marginLeft="30dp"
+    android:layout_marginRight="30dp"
+    rsv:filledColor="#FF6600"
+    rsv:rangeCount="10"
+    />
+
+  <com.github.channguyen.rsv.RangeSliderView
+    android:id="@+id/rsv_custom"
     android:layout_marginTop="50dp"
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:layout_marginLeft="30dp"
     android:layout_marginRight="30dp"
-    rsv:filledColor="#FF6600"
+    rsv:filledColor="#00cbff"
+    rsv:emptyColor="#a8aeb8"
     />
 
 </LinearLayout>

@@ -12,10 +12,10 @@
 Add a dependency to your `build.gradle`:
 ```
 dependencies {
-    compile 'com.chan.rsv:rsv:1.0.0'
+    compile 'com.github.channguyen.rsv:rsv:1.0.0'
 }
 ```
-Add the `com.chan.rsv.RangeSliderView` to your layout XML file.
+Add the `com.github.channguyen.rsv.RangeSliderView` to your layout XML file.
 ```XML
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,7 +25,7 @@ Add the `com.chan.rsv.RangeSliderView` to your layout XML file.
   android:orientation="vertical"
   >
 
-  <com.chan.rsv.RangeSliderView
+  <com.github.channguyen.rsv.RangeSliderView
     android:id="@+id/rsv_small"
     android:layout_marginTop="50dp"
     android:layout_width="match_parent"
@@ -36,7 +36,7 @@ Add the `com.chan.rsv.RangeSliderView` to your layout XML file.
     />
 
 
-  <com.chan.rsv.RangeSliderView
+  <com.github.channguyen.rsv.RangeSliderView
     android:id="@+id/rsv_large"
     android:layout_marginTop="50dp"
     android:layout_width="match_parent"

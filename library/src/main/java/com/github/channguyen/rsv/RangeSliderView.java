@@ -1,15 +1,11 @@
-package com.chan.rsv;
-
+package com.github.channguyen.rsv;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.*;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +80,6 @@ public class RangeSliderView extends View {
     this(context, attrs, -1);
   }
 
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   public RangeSliderView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
     if (attrs != null) {
@@ -97,9 +92,10 @@ public class RangeSliderView extends View {
           R.styleable.RangeSliderView_rangeCount, DEFAULT_RANGE_COUNT);
         filledColor = a.getColor(
           R.styleable.RangeSliderView_filledColor, DEFAULT_FILLED_COLOR);
+        emptyColor = a.getColor(
+          R.styleable.RangeSliderView_emptyColor, DEFAULT_EMPTY_COLOR);
         barHeightPercent = a.getFloat(
           R.styleable.RangeSliderView_barHeightPercent, DEFAULT_BAR_HEIGHT_PERCENT);
-
       } finally {
         a.recycle();
         sa.recycle();
@@ -125,7 +121,6 @@ public class RangeSliderView extends View {
       @Override
       public boolean onPreDraw() {
         getViewTreeObserver().removeOnPreDrawListener(this);
-        Log.e(TAG, "In here?");
         preComputeDrawingPosition();
         return true;
       }
@@ -265,8 +260,7 @@ public class RangeSliderView extends View {
     if (specMode == MeasureSpec.EXACTLY) {
       result = specSize;
     } else {
-      result =
-        getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight() + (2 * DEFAULT_PAINT_STROKE_WIDTH);
+      result = getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight() + (2 * DEFAULT_PAINT_STROKE_WIDTH) + 2 * (int) radius;
       if (specMode == MeasureSpec.AT_MOST) {
         result = Math.min(result, specSize);
       }
