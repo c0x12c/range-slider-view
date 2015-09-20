@@ -55,7 +55,13 @@ For more usage examples check the **sample** project.
 
 # Note
 At this point, I have problem upload it to maven central due to authentication
-issues. Will try to fix it as soon as possible :)
+issues. Will try to fix it as soon as possible :), in the mean time, just use the snapshot version
+```
+dependencies {
+    compile 'com.github.channguyen.rsv:rsv:1.0.0-SNAPSHOT'
+}
+```
+
 
 # License
 ```
