@@ -5,9 +5,10 @@
 ![Main screen](/screenshots/sc.png)
 
 # Features
-- Ripple effect on Android Lollipop devices
-- Option to set custom colors for slider
-- Option to set custom colors for slider height
+- Ripple effect.
+- Option to set custom colors for slider.
+- Option to set custom height for slider.
+- Option to set custom radius for slider.
 
 # Usage
 Add a dependency to your `build.gradle`:
@@ -52,9 +53,9 @@ Add the `com.github.channguyen.rsv.RangeSliderView` to your layout XML file.
 
 For more usage examples check the **sample** project.
 
-# Changelog
-
-# Credits
+# Note
+At this point, I have problem upload it to maven central due to authentication
+issues. Will try to fix it as soon as possible :)
 
 # License
 ```
