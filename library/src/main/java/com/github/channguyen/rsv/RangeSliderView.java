@@ -256,7 +256,7 @@ public class RangeSliderView extends View {
   }
 
   public void setInitialIndex(int index) {
-    if (index < 0 || index > rangeCount) {
+    if (index < 0 || index >= rangeCount) {
       throw new IllegalArgumentException("Attempted to set index=" + index + " out of range [0," + rangeCount + "]");
     }
     currentIndex = index;
