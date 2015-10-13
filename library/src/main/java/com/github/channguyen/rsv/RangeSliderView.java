@@ -36,6 +36,8 @@ public class RangeSliderView extends View {
 
   private static final int DEFAULT_RANGE_COUNT = 5;
 
+  private static final int DEFAULT_HEIGHT_IN_DP = 50;
+
   protected Paint paint;
 
   protected Paint ripplePaint;
@@ -45,8 +47,6 @@ public class RangeSliderView extends View {
   protected float slotRadius;
 
   private int currentIndex;
-
-  private int height;
 
   private float currentSlidingX;
 
@@ -86,6 +86,8 @@ public class RangeSliderView extends View {
 
   private float sliderRadiusPercent = DEFAULT_SLIDER_RADIUS_PERCENT;
 
+  private int layoutHeight;
+
   public RangeSliderView(Context context) {
     this(context, null);
   }
@@ -100,7 +102,7 @@ public class RangeSliderView extends View {
       TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RangeSliderView);
       TypedArray sa = context.obtainStyledAttributes(attrs, new int[]{android.R.attr.layout_height});
       try {
-        height = sa.getDimensionPixelSize(
+        layoutHeight = sa.getLayoutDimension(
           0, ViewGroup.LayoutParams.WRAP_CONTENT);
         rangeCount = a.getInt(
           R.styleable.RangeSliderView_rangeCount, DEFAULT_RANGE_COUNT);
@@ -127,13 +129,7 @@ public class RangeSliderView extends View {
     setSlotRadiusPercent(slotRadiusPercent);
     setSliderRadiusPercent(sliderRadiusPercent);
 
-    barHeight = (int) (height * barHeightPercent);
-    radius = height * sliderRadiusPercent;
-    slotRadius = height * slotRadiusPercent;
-    currentIndex = 0;
-
     slotPositions = new float[rangeCount];
-
     paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     paint.setStrokeWidth(DEFAULT_PAINT_STROKE_WIDTH);
     paint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -146,10 +142,24 @@ public class RangeSliderView extends View {
       @Override
       public boolean onPreDraw() {
         getViewTreeObserver().removeOnPreDrawListener(this);
+
+        // Update radius after we got new height
+        updateRadius(getHeight());
+
+        // Compute drawing position again
         preComputeDrawingPosition();
+
+        // Ready to draw now
         return true;
       }
     });
+    currentIndex = 0;
+  }
+
+  private void updateRadius(int height) {
+    barHeight = (int) (height * barHeightPercent);
+    radius = height * sliderRadiusPercent;
+    slotRadius = height * slotRadiusPercent;
   }
 
   public int getRangeCount() {
@@ -300,6 +310,14 @@ public class RangeSliderView extends View {
     if (specMode == MeasureSpec.EXACTLY) {
       result = specSize;
     } else {
+      final int height;
+      if (layoutHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+        height = dpToPx(getContext(), DEFAULT_HEIGHT_IN_DP);
+      } else if (layoutHeight == ViewGroup.LayoutParams.MATCH_PARENT) {
+        height = getMeasuredHeight();
+      } else {
+        height = layoutHeight;
+      }
       result = height + getPaddingTop() + getPaddingBottom() + (2 * DEFAULT_PAINT_STROKE_WIDTH);
       if (specMode == MeasureSpec.AT_MOST) {
         result = Math.min(result, specSize);
@@ -321,7 +339,7 @@ public class RangeSliderView extends View {
     if (specMode == MeasureSpec.EXACTLY) {
       result = specSize;
     } else {
-      result = getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight() + (2 * DEFAULT_PAINT_STROKE_WIDTH) + (int) (2 * radius);
+      result = specSize + getPaddingLeft() + getPaddingRight() + (2 * DEFAULT_PAINT_STROKE_WIDTH) + (int) (2 * radius);
       if (specMode == MeasureSpec.AT_MOST) {
         result = Math.min(result, specSize);
       }
@@ -550,6 +568,26 @@ public class RangeSliderView extends View {
   }
 
   /**
+   * Helper method to convert pixel to dp
+   * @param context
+   * @param px
+   * @return
+   */
+  static int pxToDp(final Context context, final float px) {
+    return (int)(px / context.getResources().getDisplayMetrics().density);
+  }
+
+  /**
+   * Helper method to convert dp to pixel
+   * @param context
+   * @param dp
+   * @return
+   */
+  static int dpToPx(final Context context, final float dp) {
+    return (int)(dp * context.getResources().getDisplayMetrics().density);
+  }
+
+  /**
    * Interface to keep track sliding position
    */
   public interface OnSlideListener {
@@ -557,7 +595,7 @@ public class RangeSliderView extends View {
     /**
      * Notify when slider change to new index position
      *
-     * @param index
+     * @param index The index value of range count [0, rangeCount - 1]
      */
     void onSlide(int index);
   }
