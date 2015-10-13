@@ -61,7 +61,7 @@ For more usage examples check the **sample** project.
 
 
 **Version 1.0.0**
-+ Initialize release
++ First release
 
 
 # License
