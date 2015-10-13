@@ -15,7 +15,7 @@
 Add a dependency to your `build.gradle`:
 ```
 dependencies {
-    compile 'com.github.channguyen:rsv:1.0.0'
+    compile 'com.github.channguyen:rsv:1.0.1'
 }
 ```
 Add the `com.github.channguyen.rsv.RangeSliderView` to your layout XML file.
@@ -53,6 +53,16 @@ Add the `com.github.channguyen.rsv.RangeSliderView` to your layout XML file.
 ```
 
 For more usage examples check the **sample** project.
+
+### Changelog
+
+**Version 1.0.1**
++ Bug fixes for layout param
+
+
+**Version 1.0.0**
++ Initialize release
+
 
 # License
 ```
